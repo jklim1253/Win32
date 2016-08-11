@@ -15,7 +15,11 @@ ImageButton::ImageButton()
 
 }
 ImageButton::~ImageButton() {
-
+	// release resource.
+	if (hBitmap) {
+		::DeleteObject(hBitmap);
+		hBitmap = NULL;
+	}
 }
 
 HWND ImageButton::Create(HWND hParentWnd, RECT& rc, UINT uId, LPCTSTR szFileName, SIZE& cBlock, COLORREF clrTrans/*=RGB(255,255,255)*/) {
@@ -26,10 +30,16 @@ HWND ImageButton::Create(HWND hParentWnd, RECT& rc, UINT uId, LPCTSTR szFileName
 		rc.left, rc.top, rc.right - rc.left, rc.bottom - rc.top,
 		hParentWnd, (HMENU)uId, hInstance, NULL);
 	::SetWindowLongPtr(hWnd, GWLP_USERDATA, PtrToLong(this));
+
+	// subclassing button.
 	lpfnButtonProc = (WNDPROC)::SetWindowLongPtr(hWnd, GWLP_WNDPROC, PtrToLong(&ImageButton::WndProc));
 
+	// load bitmap from file.
 	hBitmap = (HBITMAP)::LoadImage(NULL, szFileName, IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION | LR_SHARED);
 
+	// send information of bitmap(unit size)
+	// TODO : 굳이 메세지로 전달해야 하는가 고민된다, 멤버 변수 값 설정외에 큰 의미가 있을려나..
+	//			WM_CREATE 처리를 못하는 관계로 반드시 한번은 실행되어야 하는 코드를 BM_SETIMAGELIST 처리하면서 하는 걸로...
 	::SendMessage(hWnd, BM_SETIMAGELIST, MAKEWPARAM(cBlock.cx, cBlock.cy), 0);
 
 	clrTransparent = clrTrans;
@@ -48,6 +58,7 @@ LRESULT CALLBACK ImageButton::ButtonProc(HWND hWnd, UINT uMsg, WPARAM wParam, LP
 		RECT rc;
 		::GetClientRect(hWnd, &rc);
 
+		// button background
 		HBRUSH hBarBrush = ::CreateSolidBrush(RGB(100, 100, 200));
 		HBRUSH hOldBrush = (HBRUSH)::SelectObject(hdc, hBarBrush);
 
@@ -56,6 +67,7 @@ LRESULT CALLBACK ImageButton::ButtonProc(HWND hWnd, UINT uMsg, WPARAM wParam, LP
 		::SelectObject(hdc, hOldBrush);
 		::DeleteObject(hBarBrush);
 
+		// button image
 		::TransparentBlt(hdc,
 			rc.left, rc.top, rc.right - rc.left, rc.bottom - rc.top,
 			hBitmapDC,
@@ -80,7 +92,7 @@ LRESULT CALLBACK ImageButton::ButtonProc(HWND hWnd, UINT uMsg, WPARAM wParam, LP
 
 			if (nState != BST_HOVER) {
 				nState = BST_HOVER;
-				::InvalidateRect(hWnd, NULL, FALSE);
+				::InvalidateRect(hWnd, NULL, TRUE);
 			}
 		}
 	}
@@ -90,7 +102,7 @@ LRESULT CALLBACK ImageButton::ButtonProc(HWND hWnd, UINT uMsg, WPARAM wParam, LP
 
 			if (nState != BST_NORMAL) {
 				nState = BST_NORMAL;
-				::InvalidateRect(hWnd, NULL, FALSE);
+				::InvalidateRect(hWnd, NULL, TRUE);
 			}
 		}
 	}
@@ -98,6 +110,7 @@ LRESULT CALLBACK ImageButton::ButtonProc(HWND hWnd, UINT uMsg, WPARAM wParam, LP
 		cx = LOWORD(wParam);
 		cy = HIWORD(wParam);
 
+		// for hover/leave message.
 		if (!bTrackMouseEvent) {
 			TRACKMOUSEEVENT tme;
 			tme.cbSize = sizeof(TRACKMOUSEEVENT);
@@ -109,6 +122,7 @@ LRESULT CALLBACK ImageButton::ButtonProc(HWND hWnd, UINT uMsg, WPARAM wParam, LP
 		}
 	}
 	else if (uMsg == WM_MOUSEMOVE) {
+		// for hover/leave message.
 		if (!bTrackMouseEvent) {
 			TRACKMOUSEEVENT tme;
 			tme.cbSize = sizeof(TRACKMOUSEEVENT);
@@ -123,6 +137,7 @@ LRESULT CALLBACK ImageButton::ButtonProc(HWND hWnd, UINT uMsg, WPARAM wParam, LP
 	return ::CallWindowProc(lpfnButtonProc, hWnd, uMsg, wParam, lParam);
 }
 
+// ImageButton::WndProc은 static 이라서 button별 데이터 접근이 용이하지 않아, delegator 역활만 하도록 처리함.
 LRESULT CALLBACK ImageButton::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 	ImageButton* pThis = reinterpret_cast<ImageButton*>(::GetWindowLongPtr(hWnd, GWLP_USERDATA));
 

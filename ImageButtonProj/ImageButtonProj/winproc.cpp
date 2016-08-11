@@ -27,6 +27,17 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 
 		return 0;
 	}
+	else if (uMsg == WM_PAINT) {
+		PAINTSTRUCT ps;
+		HDC hdc = ::BeginPaint(hWnd, &ps);
+
+		RECT rc;
+		::GetClientRect(hWnd, &rc);
+		::SetBkMode(hdc, TRANSPARENT);
+		::DrawText(hdc, _T("If want to move window, grab any point and then drag."), -1, &rc, DT_SINGLELINE | DT_CENTER | DT_VCENTER);
+
+		::EndPaint(hWnd, &ps);
+	}
 	else if (uMsg == WM_KEYDOWN) {
 		if (wParam == VK_ESCAPE) {
 			::SendMessage(hWnd, WM_SYSCOMMAND, SC_CLOSE, 0);
