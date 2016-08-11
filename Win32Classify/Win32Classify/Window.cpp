@@ -44,6 +44,7 @@ HWND Window::GetHwnd() const {
 }
 void Window::Show(int nCmdShow/*=SW_NORMAL*/) {
 	::ShowWindow(hMainWnd, nCmdShow);
+	::SetFocus(hMainWnd);
 }
 
 LRESULT Window::WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
