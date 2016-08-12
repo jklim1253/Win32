@@ -1,9 +1,9 @@
 #pragma once
 
 #include "Window.h"
-#include "Grippable.h"
+//#include "Grippable.h"
 
-class AboutWindow : public Window, public Grippable {
+class AboutWindow : public Window {
 public :
 	AboutWindow();
 

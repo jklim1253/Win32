@@ -34,6 +34,9 @@ INT MainWindow::Run() {
 	return (INT)msg.wParam;
 }
 void MainWindow::setEventHandler() {
+	AddEventHandler(WM_LBUTTONDOWN, (Window::Reaction)&MainWindow::OnLButtonDown);
+	AddEventHandler(WM_LBUTTONUP, (Window::Reaction)&MainWindow::OnLButtonUp);
+	AddEventHandler(WM_MOUSEMOVE, (Window::Reaction)&MainWindow::OnMouseMove);
 	AddEventHandler(WM_CREATE, (Window::Reaction)&MainWindow::OnCreate);
 	AddEventHandler(WM_DESTROY, (Window::Reaction)&MainWindow::OnDestroy);
 	AddEventHandler(WM_PAINT, (Window::Reaction)&MainWindow::OnPaint);
@@ -73,6 +76,32 @@ LRESULT MainWindow::OnKeyDown(HWND hWnd, WPARAM wParam, LPARAM lParam) {
 			winAbout.Show();
 		}
 	}
+
+	return 0;
+}
+LRESULT MainWindow::OnLButtonDown(HWND hWnd, WPARAM wParam, LPARAM lParam) {
+	bGripWindow = TRUE;
+	::SetCapture(hWnd);
+	::GetCursorPos(&ptMouse);
+
+	return 0;
+}
+LRESULT MainWindow::OnLButtonUp(HWND hWnd, WPARAM wParam, LPARAM lParam) {
+	bGripWindow = FALSE;
+	::ReleaseCapture();
+	return 0;
+}
+LRESULT MainWindow::OnMouseMove(HWND hWnd, WPARAM wParam, LPARAM lParam) {
+	if (!bGripWindow) return 0;
+
+	POINT ptOld = ptMouse;
+	::GetCursorPos(&ptMouse);
+	POINT ptDiff = { ptMouse.x - ptOld.x, ptMouse.y - ptOld.y };
+
+	RECT rc;
+	::GetWindowRect(hWnd, &rc);
+	::MoveWindow(hWnd, rc.left + ptDiff.x, rc.top + ptDiff.y,
+		rc.right - rc.left, rc.bottom - rc.top, TRUE);
 
 	return 0;
 }

@@ -7,8 +7,11 @@ class Grippable {
 public :
 	Grippable();
 
-protected :
+public :
 	LRESULT WindowProc(HWND, UINT, WPARAM, LPARAM);
+	LRESULT OnLButtonDown(HWND, WPARAM, LPARAM);
+	LRESULT OnLButtonUp(HWND, WPARAM, LPARAM);
+	LRESULT OnMouseMove(HWND, WPARAM, LPARAM);
 protected :
 	BOOL bGripWindow;
 	POINT ptMouse;
