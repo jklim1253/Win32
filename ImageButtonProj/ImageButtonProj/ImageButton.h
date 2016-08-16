@@ -18,11 +18,13 @@ public :
 public :
 	HWND Create(HWND hParentWnd, RECT& rc, UINT uId, LPCTSTR szFileName, SIZE& cBlock, COLORREF clrTrans = RGB(255,255,255));
 
+	HWND GetHandle();
 protected :
 	LRESULT CALLBACK ButtonProc(HWND, UINT, WPARAM, LPARAM);
 	static LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 
 private :
+	HWND hButtonWnd;
 	HBITMAP hBitmap;
 	BUTTONSTATE nState;
 	static WNDPROC lpfnButtonProc;

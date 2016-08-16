@@ -52,9 +52,15 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 		else if (uId == ID_MAXMIN) {
 			if (bFullScreen) {
 				::SendMessage(hWnd, WM_SYSCOMMAND, SC_RESTORE, 0);
+				RECT rc;
+				::GetClientRect(hWnd, &rc);
+				::MoveWindow(Close.GetHandle(), rc.right - 50, 0, 50, 50, TRUE);
 			}
 			else {
 				::SendMessage(hWnd, WM_SYSCOMMAND, SC_MAXIMIZE, 0);
+				RECT rc;
+				::GetClientRect(hWnd, &rc);
+				::MoveWindow(Close.GetHandle(), rc.right - 50, 0, 50, 50, TRUE);
 			}
 			bFullScreen = !bFullScreen;
 		}

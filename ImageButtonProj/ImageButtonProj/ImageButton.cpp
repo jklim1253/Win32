@@ -7,6 +7,7 @@ WNDPROC ImageButton::lpfnButtonProc;
 
 ImageButton::ImageButton() 
 	: hBitmap(NULL)
+	, hButtonWnd(NULL)
 	, nState(BST_NORMAL)
 	, cx(0)
 	, cy(0)
@@ -25,14 +26,14 @@ ImageButton::~ImageButton() {
 HWND ImageButton::Create(HWND hParentWnd, RECT& rc, UINT uId, LPCTSTR szFileName, SIZE& cBlock, COLORREF clrTrans/*=RGB(255,255,255)*/) {
 	HINSTANCE hInstance = (HINSTANCE)::GetModuleHandle(NULL);
 
-	HWND hWnd = ::CreateWindowEx(0, _T("Button"), _T(""),
+	hButtonWnd = ::CreateWindowEx(0, _T("Button"), _T(""),
 		WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS,
 		rc.left, rc.top, rc.right - rc.left, rc.bottom - rc.top,
 		hParentWnd, (HMENU)uId, hInstance, NULL);
-	::SetWindowLongPtr(hWnd, GWLP_USERDATA, PtrToLong(this));
+	::SetWindowLongPtr(hButtonWnd, GWLP_USERDATA, PtrToLong(this));
 
 	// subclassing button.
-	lpfnButtonProc = (WNDPROC)::SetWindowLongPtr(hWnd, GWLP_WNDPROC, PtrToLong(&ImageButton::WndProc));
+	lpfnButtonProc = (WNDPROC)::SetWindowLongPtr(hButtonWnd, GWLP_WNDPROC, PtrToLong(&ImageButton::WndProc));
 
 	// load bitmap from file.
 	hBitmap = (HBITMAP)::LoadImage(NULL, szFileName, IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION | LR_SHARED);
@@ -40,11 +41,14 @@ HWND ImageButton::Create(HWND hParentWnd, RECT& rc, UINT uId, LPCTSTR szFileName
 	// send information of bitmap(unit size)
 	// TODO : 굳이 메세지로 전달해야 하는가 고민된다, 멤버 변수 값 설정외에 큰 의미가 있을려나..
 	//			WM_CREATE 처리를 못하는 관계로 반드시 한번은 실행되어야 하는 코드를 BM_SETIMAGELIST 처리하면서 하는 걸로...
-	::SendMessage(hWnd, BM_SETIMAGELIST, MAKEWPARAM(cBlock.cx, cBlock.cy), 0);
+	::SendMessage(hButtonWnd, BM_SETIMAGELIST, MAKEWPARAM(cBlock.cx, cBlock.cy), 0);
 
 	clrTransparent = clrTrans;
 
-	return hWnd;
+	return hButtonWnd;
+}
+HWND ImageButton::GetHandle() {
+	return hButtonWnd;
 }
 
 LRESULT CALLBACK ImageButton::ButtonProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
@@ -59,21 +63,21 @@ LRESULT CALLBACK ImageButton::ButtonProc(HWND hWnd, UINT uMsg, WPARAM wParam, LP
 		::GetClientRect(hWnd, &rc);
 
 		// button background
-		HBRUSH hBarBrush = ::CreateSolidBrush(RGB(100, 100, 200));
-		HBRUSH hOldBrush = (HBRUSH)::SelectObject(hdc, hBarBrush);
+		//HBRUSH hBarBrush = ::CreateSolidBrush(RGB(100, 100, 200));
+		//HBRUSH hOldBrush = (HBRUSH)::SelectObject(hdc, hBarBrush);
 
-		::FillRect(hdc, &rc, hBarBrush);
+		//::FillRect(hdc, &rc, hBarBrush);
 
-		::SelectObject(hdc, hOldBrush);
-		::DeleteObject(hBarBrush);
+		//::SelectObject(hdc, hOldBrush);
+		//::DeleteObject(hBarBrush);
 
 		// button image
-		::TransparentBlt(hdc,
+		::StretchBlt(hdc,
 			rc.left, rc.top, rc.right - rc.left, rc.bottom - rc.top,
 			hBitmapDC,
 			nState*cx, 0,
 			cx, cy,
-			clrTransparent);
+			SRCCOPY);
 
 		::SelectObject(hBitmapDC, hOldBitmap);
 		::DeleteDC(hBitmapDC);

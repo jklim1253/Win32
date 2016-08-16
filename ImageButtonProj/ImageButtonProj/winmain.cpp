@@ -11,7 +11,7 @@ _tWinMain(HINSTANCE hInst,
 
 	WNDCLASSEX wcex = { 0 };
 	wcex.cbSize = sizeof(WNDCLASSEX);
-	wcex.hbrBackground = (HBRUSH)::GetStockObject(GRAY_BRUSH);
+	wcex.hbrBackground = (HBRUSH)::GetStockObject(WHITE_BRUSH);
 	wcex.hCursor = ::LoadCursor(NULL, IDC_ARROW);
 	wcex.hIcon = ::LoadIcon(NULL, IDI_APPLICATION);
 	wcex.hIconSm = wcex.hIcon;
