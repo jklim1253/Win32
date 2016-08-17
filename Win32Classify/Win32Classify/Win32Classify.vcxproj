@@ -147,6 +147,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="About.cpp" />
+    <ClCompile Include="Control.cpp" />
     <ClCompile Include="Grippable.cpp" />
     <ClCompile Include="MainWindow.cpp" />
     <ClCompile Include="Window.cpp" />
@@ -154,13 +155,17 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="About.h" />
+    <ClInclude Include="Control.h" />
     <ClInclude Include="Grippable.h" />
     <ClInclude Include="MainWindow.h" />
+    <ClInclude Include="utility.hpp" />
     <ClInclude Include="Window.h" />
     <ClInclude Include="winmain.h" />
   </ItemGroup>
   <ItemGroup>
-    <Text Include="about.txt" />
+    <Text Include="about.txt">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </Text>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
