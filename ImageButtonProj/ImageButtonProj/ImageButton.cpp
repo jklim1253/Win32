@@ -91,24 +91,16 @@ LRESULT CALLBACK ImageButton::ButtonProc(HWND hWnd, UINT uMsg, WPARAM wParam, LP
 		nState = BST_NORMAL;
 	}
 	else if (uMsg == WM_MOUSEHOVER) {
-		if (bTrackMouseEvent) {
-			bTrackMouseEvent = FALSE;
+		bTrackMouseEvent = FALSE;
 
-			if (nState != BST_HOVER) {
-				nState = BST_HOVER;
-				::InvalidateRect(hWnd, NULL, TRUE);
-			}
-		}
+		nState = BST_HOVER;
+		::InvalidateRect(hWnd, NULL, TRUE);
 	}
 	else if (uMsg == WM_MOUSELEAVE) {
-		if (bTrackMouseEvent) {
-			bTrackMouseEvent = FALSE;
+		bTrackMouseEvent = FALSE;
 
-			if (nState != BST_NORMAL) {
-				nState = BST_NORMAL;
-				::InvalidateRect(hWnd, NULL, TRUE);
-			}
-		}
+		nState = BST_NORMAL;
+		::InvalidateRect(hWnd, NULL, TRUE);
 	}
 	else if (uMsg == BM_SETIMAGELIST) {
 		cx = LOWORD(wParam);
