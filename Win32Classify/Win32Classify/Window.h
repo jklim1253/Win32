@@ -18,6 +18,7 @@ public :
 	HWND Create(HWND hParentWnd, DWORD dwExStyle, DWORD dwStyle, RECT& rc, LPCTSTR szClassName, LPCTSTR szTitle);
 	HWND GetHwnd() const;
 	void Show(int nCmdShow = SW_NORMAL);
+	void Invalidate(BOOL bErase = TRUE);
 
 protected :
 	LRESULT WindowProc(HWND, UINT, WPARAM, LPARAM);

@@ -47,6 +47,13 @@ void Window::Show(int nCmdShow/*=SW_NORMAL*/) {
 	::SetFocus(hMainWnd);
 }
 
+void Window::Invalidate(BOOL bErase)
+{
+	RECT rc;
+	::GetClientRect(hMainWnd, &rc);
+	::InvalidateRect(hMainWnd, &rc, bErase);
+}
+
 LRESULT Window::WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 	EventIter it = EventMap.find(uMsg);
 	if (it != EventMap.end()) {
