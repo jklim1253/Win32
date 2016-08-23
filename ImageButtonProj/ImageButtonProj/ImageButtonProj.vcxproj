@@ -148,12 +148,14 @@
   <ItemGroup>
     <ClCompile Include="ImageButton.cpp" />
     <ClCompile Include="ImageDepot.cpp" />
+    <ClCompile Include="SlideBoard.cpp" />
     <ClCompile Include="winmain.cpp" />
     <ClCompile Include="winproc.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ImageButton.h" />
     <ClInclude Include="ImageDepot.h" />
+    <ClInclude Include="SlideBoard.h" />
     <ClInclude Include="utility.hpp" />
     <ClInclude Include="winmain.h" />
   </ItemGroup>

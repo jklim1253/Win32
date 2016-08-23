@@ -1,5 +1,7 @@
 #pragma once
 
+#include <Windows.h>
+
 template<typename T>
 class Singleton {
 protected :
@@ -11,3 +13,8 @@ public :
 		return instance;
 	}
 };
+
+template<typename GDIObject>
+GDIObject Select(HDC hdc, GDIObject obj) {
+	return (GDIObject)::SelectObject(hdc, obj);
+}

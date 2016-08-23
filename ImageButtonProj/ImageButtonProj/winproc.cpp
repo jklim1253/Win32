@@ -1,7 +1,9 @@
 #include "winmain.h"
 #include "ImageButton.h"
+#include "SlideBoard.h"
 
 ImageButton Add, MinMax, Close;
+SlideBoard Board;
 BOOL bFullScreen = FALSE;
 BOOL bGrabWindow = FALSE;
 POINT ptMouse;
@@ -24,6 +26,17 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 
 		rcButton = { rc.right - 50, 0, rc.right, 50 };
 		Close.Create(hWnd, rcButton, ID_CLOSE, _T("close.bmp"), cBlock);
+
+		LONG margin = 10;
+		RECT rcBoard = { rc.left + margin, rc.top + 50 + margin, rc.right - margin, rc.bottom - margin };
+		SIZE cBoard;
+		if (rcBoard.right - rcBoard.left > rcBoard.bottom - rcBoard.top) {
+			cBoard.cx = cBoard.cy = rcBoard.bottom - rcBoard.top;
+		}
+		else {
+			cBoard.cx = cBoard.cy = rcBoard.right - rcBoard.left;
+		}
+		Board.Create(hWnd, rcBoard, cBoard);
 
 		return 0;
 	}
@@ -55,12 +68,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 				RECT rc;
 				::GetClientRect(hWnd, &rc);
 				::MoveWindow(Close.GetHandle(), rc.right - 50, 0, 50, 50, TRUE);
+				::MoveWindow(Board.GetHandle(), 10, 60, rc.right - rc.left - 20, rc.bottom - rc.top - 70, TRUE);
 			}
 			else {
 				::SendMessage(hWnd, WM_SYSCOMMAND, SC_MAXIMIZE, 0);
 				RECT rc;
 				::GetClientRect(hWnd, &rc);
 				::MoveWindow(Close.GetHandle(), rc.right - 50, 0, 50, 50, TRUE);
+				::MoveWindow(Board.GetHandle(), 10, 60, rc.right - rc.left - 20, rc.bottom-rc.top - 70, TRUE);
 			}
 			bFullScreen = !bFullScreen;
 		}

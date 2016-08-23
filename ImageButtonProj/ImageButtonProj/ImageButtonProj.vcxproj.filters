@@ -27,6 +27,9 @@
     <ClCompile Include="ImageDepot.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="SlideBoard.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="winmain.h">
@@ -39,6 +42,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ImageDepot.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SlideBoard.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -25,7 +25,7 @@ _tWinMain(HINSTANCE hInst,
 		return 1;
 	}
 
-	DWORD dwStyle = WS_POPUP | WS_VISIBLE;
+	DWORD dwStyle = WS_POPUP | WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS;
 	INT cx = 800;
 	INT cy = 600;
 	INT x = (::GetSystemMetrics(SM_CXSCREEN) - cx) / 2;
