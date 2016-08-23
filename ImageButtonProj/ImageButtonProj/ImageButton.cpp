@@ -1,9 +1,59 @@
+#include <string>
+#include <map>
+#include "utility.hpp"
 #include "ImageButton.h"
 
 WNDPROC ImageButton::lpfnButtonProc;
 
 #define TIMER_UPDATE 1
 #define BM_SETIMAGELIST (WM_USER+1)
+
+#if defined(UNICODE) || defined(_UNICODE)
+#define tstring wstring
+#else
+#define tstring string
+#endif 
+
+class _ImageDepot : public Singleton<_ImageDepot> {
+	typedef std::map<std::tstring, HBITMAP> Container;
+	typedef typename Container::iterator Iterator;
+
+	friend class Singleton<_ImageDepot>;
+private :
+	_ImageDepot() {}
+	~_ImageDepot() {}
+public :
+	HBITMAP get(const std::tstring& filename) {
+		HBITMAP hBitmap = NULL;
+		Iterator it = depot.find(filename);
+		if (it == depot.end()) {
+			if ((hBitmap = _load(filename)) == NULL) {
+				// TODO : load error.
+				return NULL;
+			}
+			depot.insert(std::make_pair(filename, hBitmap));
+
+			return hBitmap;
+		}
+		return it->second;
+	}
+	HBITMAP operator [](const std::tstring& filename) {
+		return get(filename);
+	}
+private :
+	HBITMAP _load(const std::tstring& filename) {
+		return (HBITMAP)::LoadImage(NULL, filename.c_str(), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION | LR_SHARED);
+	}
+	void _clear() {
+		for (Iterator it = depot.begin(); it != depot.end(); it++) {
+			::DeleteObject(it->second);
+			it->second = NULL;
+		}
+		depot.clear();
+	}
+	std::map<std::tstring, HBITMAP> depot;
+};
+#define ImageDepot (_ImageDepot::GetReference())
 
 ImageButton::ImageButton() 
 	: hBitmap(NULL)
@@ -16,11 +66,6 @@ ImageButton::ImageButton()
 
 }
 ImageButton::~ImageButton() {
-	// release resource.
-	if (hBitmap) {
-		::DeleteObject(hBitmap);
-		hBitmap = NULL;
-	}
 }
 
 HWND ImageButton::Create(HWND hParentWnd, RECT& rc, UINT uId, LPCTSTR szFileName, SIZE& cBlock, COLORREF clrTrans/*=RGB(255,255,255)*/) {
@@ -36,7 +81,7 @@ HWND ImageButton::Create(HWND hParentWnd, RECT& rc, UINT uId, LPCTSTR szFileName
 	lpfnButtonProc = (WNDPROC)::SetWindowLongPtr(hButtonWnd, GWLP_WNDPROC, PtrToLong(&ImageButton::WndProc));
 
 	// load bitmap from file.
-	hBitmap = (HBITMAP)::LoadImage(NULL, szFileName, IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION | LR_SHARED);
+	hBitmap = ImageDepot[szFileName];
 
 	// send information of bitmap(unit size)
 	// TODO : 굳이 메세지로 전달해야 하는가 고민된다, 멤버 변수 값 설정외에 큰 의미가 있을려나..

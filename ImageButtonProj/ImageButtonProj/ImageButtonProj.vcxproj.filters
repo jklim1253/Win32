@@ -32,5 +32,8 @@
     <ClInclude Include="ImageButton.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="utility.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
