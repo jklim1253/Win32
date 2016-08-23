@@ -8,7 +8,7 @@
 #pragma comment(linker,"/manifestdependency:\"type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
 
 enum CONTROL_ID {
-	ID_PLUS = 0,
+	ID_PLUS = 1000,
 	ID_MAXMIN,
 	ID_CLOSE,
 };

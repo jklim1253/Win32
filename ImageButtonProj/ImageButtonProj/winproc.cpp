@@ -1,12 +1,40 @@
 #include "winmain.h"
 #include "ImageButton.h"
 #include "SlideBoard.h"
+#include <sstream>
+#include "Button.h"
 
+struct RunOperation : public Operation {
+	virtual void operator ()() {
+		::MessageBox(NULL, _T("Test"), _T("Test"), MB_OK);
+	}
+};
+struct TestResponse : public EventResponser {
+	virtual void operator ()() {
+		::MessageBox(NULL, _T("Test response"), _T("Test"), MB_OK);
+	}
+};
+struct Test2Response : public EventResponser {
+	virtual void operator ()() {
+		::MessageBox(NULL, _T("Test2 response"), _T("Test"), MB_OK);
+	}
+};
+struct PressResponse : public EventResponser {
+	virtual void operator ()() {
+		::MessageBox(NULL, _T("Press response"), _T("Test"), MB_OK);
+	}
+};
+struct HoverResponse : public EventResponser {
+	virtual void operator ()() {
+		::MessageBox(NULL, _T("Hover response"), _T("Test"), MB_OK);
+	}
+};
 ImageButton Add, MinMax, Close;
 SlideBoard Board;
 BOOL bFullScreen = FALSE;
 BOOL bGrabWindow = FALSE;
 POINT ptMouse;
+Button test, test2;
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 
@@ -38,6 +66,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 		}
 		Board.Create(hWnd, rcBoard, cBoard);
 
+		test.Create(hWnd, Rect(200, 0, Size(100,50)), _T("Test"));
+		test.setResponseClicked(std::make_shared<TestResponse>());
+		//test.setResponsePressing(std::make_shared<PressResponse>());
+		//test.setResponseHover(std::make_shared<HoverResponse>());
+		test2.Create(hWnd, Rect(300, 0, Size(100,50)), _T("Test2"));
+		test2.setResponseClicked(std::make_shared<Test2Response>());
 		return 0;
 	}
 	else if (uMsg == WM_PAINT) {
@@ -59,8 +93,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 	}
 	else if (uMsg == WM_COMMAND) {
 		UINT uId = LOWORD(wParam);
+		UINT uNotify = HIWORD(wParam);
 		if (uId == ID_PLUS) {
-			::MessageBox(NULL, _T("Add"), _T("Info"), MB_OK);
+			//::MessageBox(NULL, _T("Add"), _T("Info"), MB_OK);
+			std::wostringstream oss;
+			oss << (Board.GetBoxLength() + 1) << " item";
+			std::shared_ptr<Operation> op(std::make_shared<RunOperation>());
+			Board.AddBox(oss.str().c_str(), op);
 		}
 		else if (uId == ID_MAXMIN) {
 			if (bFullScreen) {
