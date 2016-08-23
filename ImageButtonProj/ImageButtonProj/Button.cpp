@@ -221,7 +221,7 @@ public :
 	std::shared_ptr<EventResponser> resp_pressing;
 };
 Button::Button()
-	: impl(new ButtonImpl)
+	: impl(std::make_shared<ButtonImpl>())
 {
 }
 
@@ -239,7 +239,7 @@ HWND Button::Create(HWND hParentWnd, Rect rc, LPCTSTR title)
 	DWORD dwStyle = WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS;
 	impl->SetText(title);
 	hOwner = ::CreateWindowEx(0, impl->szClassName, title, dwStyle, rc.left, rc.top, rc.width(), rc.height(),
-		hParentWnd, (HMENU)generateId(), hInstance, impl);
+		hParentWnd, (HMENU)generateId(), hInstance, impl.get());
 
 	return HWND();
 }

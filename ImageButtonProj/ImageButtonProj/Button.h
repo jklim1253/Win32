@@ -27,7 +27,6 @@ struct EventResponser {
 class ButtonImpl;
 class Button : public IControl<Button> {
 public :
-public :
 	Button();
 	virtual ~Button();
 
@@ -44,5 +43,5 @@ public :
 	void setResponseClicked(std::shared_ptr<EventResponser> res);
 	void setResponsePressing(std::shared_ptr<EventResponser> res);
 private :
-	ButtonImpl* impl;
+	std::shared_ptr<ButtonImpl> impl;
 };
