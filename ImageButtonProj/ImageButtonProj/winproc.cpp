@@ -4,6 +4,7 @@
 #include "SlideBoard.h"
 #include <sstream>
 #include "Button.h"
+#include <windowsx.h>
 
 struct RunOperation : public Operation {
 	virtual void operator ()() {
@@ -60,6 +61,7 @@ struct NormalResponse : public EventResponser {
 	}
 };
 
+HMENU hMenu = NULL;
 LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 
 	if (uMsg == WM_DESTROY) {
@@ -98,6 +100,20 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 		Board.Create(hWnd, Rect(), cBoard);
 		Board.Move(rc.Deflate(margin, 50 + margin, margin, margin));
 
+		hMenu = ::CreatePopupMenu();
+		MENUITEMINFO mii = { 0 };
+		mii.cbSize = sizeof(MENUITEMINFO);
+		mii.fMask = MIIM_STRING | MIIM_DATA | MIIM_ID;
+		mii.dwTypeData = _T("Exit");
+		mii.cch = _tcslen(mii.dwTypeData);
+		mii.wID = 1000;
+		::InsertMenuItem(hMenu, 0, TRUE, &mii);
+
+		mii.dwTypeData = _T("Config...");
+		mii.cch = _tcslen(mii.dwTypeData);
+		mii.wID = 1001;
+		::InsertMenuItem(hMenu, 1, TRUE, &mii);
+
 		return 0;
 	}
 	else if (uMsg == WM_PAINT) {
@@ -106,12 +122,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 
 		Rect rc = Rect::clientRect(hWnd);
 
+		// background, border
 		HPEN hBorderPen = ::CreatePen(PS_SOLID, 1, RGB(100, 100, 200));
 		HPEN hOldPen = Select(hdc, hBorderPen);
 		::Rectangle(hdc, rc.left, rc.top, rc.right, rc.bottom);
 		Select(hdc, hOldPen);
 		::DeleteObject(hBorderPen);
 
+		// center text
 		int nOldMode = ::SetBkMode(hdc, TRANSPARENT);
 		::DrawText(hdc, _T("If want to move window, grab any point and then drag."), -1, &rc, DT_SINGLELINE | DT_CENTER | DT_VCENTER);
 		::SetBkMode(hdc, nOldMode);
@@ -125,39 +143,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 			return 0;
 		}
 	}
-	else if (uMsg == WM_COMMAND) {
-		//UINT uId = LOWORD(wParam);
-		//UINT uNotify = HIWORD(wParam);
-		//if (uId == Add.GetId() && uNotify == BM_CLICKED) {
-		//	//::MessageBox(NULL, _T("Add"), _T("Info"), MB_OK);
-		//	std::wostringstream oss;
-		//	oss << (Board.GetBoxLength() + 1) << " item";
-		//	std::shared_ptr<Operation> op(std::make_shared<RunOperation>());
-		//	Board.AddBox(oss.str().c_str(), op);
-		//}
-		//else if (uId == MinMax.GetId() && uNotify == BM_CLICKED) {
-		//	if (bFullScreen) {
-		//		::SendMessage(hWnd, WM_SYSCOMMAND, SC_RESTORE, 0);
-		//		RECT rc;
-		//		::GetClientRect(hWnd, &rc);
-		//		Close.Move(rc.right - 50, 0);
-
-		//		::MoveWindow(Board.GetHandle(), 10, 60, rc.right - rc.left - 20, rc.bottom - rc.top - 70, TRUE);
-		//	}
-		//	else {
-		//		::SendMessage(hWnd, WM_SYSCOMMAND, SC_MAXIMIZE, 0);
-		//		RECT rc;
-		//		::GetClientRect(hWnd, &rc);
-		//		Close.Move(rc.right - 50, 0);
-		//		::MoveWindow(Board.GetHandle(), 10, 60, rc.right - rc.left - 20, rc.bottom-rc.top - 70, TRUE);
-		//	}
-		//	bFullScreen = !bFullScreen;
-		//}
-		//else if (uId == Close.GetId() && uNotify == BM_CLICKED) {
-		//	::SendMessage(hWnd, WM_SYSCOMMAND, SC_CLOSE, 0);
-		//}
-		return 0;
-	}
 	else if (uMsg == WM_LBUTTONDOWN) {
 		::SetCapture(hWnd);
 
@@ -167,6 +152,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 		::SetCursor(::LoadCursor(NULL, IDC_HAND));
 
 		bGrabWindow = TRUE;
+
+		return 0;
 	}
 	else if (uMsg == WM_LBUTTONUP) {
 
@@ -175,6 +162,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 		::SetCursor(::LoadCursor(NULL, IDC_ARROW));
 
 		bGrabWindow = FALSE;
+
+		return 0;
 	}
 	else if (uMsg == WM_MOUSEMOVE) {
 		if (bFullScreen) return 0;
@@ -190,6 +179,42 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 		RECT rcWin;
 		::GetWindowRect(hWnd, &rcWin);
 		::MoveWindow(hWnd, rcWin.left + ptDiff.x, rcWin.top + ptDiff.y, rcWin.right - rcWin.left, rcWin.bottom - rcWin.top, TRUE);
+
+		return 0;
+	}
+	else if (uMsg == WM_RBUTTONDOWN) {
+		Point ptMenu(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
+		ptMenu = ptMenu.toScreen(hWnd);
+		// show popup-menu.
+		int nSelect = ::TrackPopupMenuEx(hMenu, TPM_LEFTALIGN | TPM_TOPALIGN | TPM_NOANIMATION | TPM_RETURNCMD, ptMenu.x, ptMenu.y, hWnd, NULL);
+
+		switch (nSelect) {
+		case 1000 :
+			::MessageBox(NULL, _T("1000"), _T("Out"), MB_OK);
+			break;
+		case 1001 :
+			::MessageBox(NULL, _T("1000"), _T("Out"), MB_OK);
+			break;
+		default :
+			::MessageBox(NULL, _T("Wrong"), _T("Out"), MB_OK);
+			break;
+		}
+
+		return 0;
+	}
+	else if (uMsg == WM_COMMAND) {
+		// menu operation
+		WORD wMenuId = LOWORD(wParam);
+		std::wstring szText(_T("NULL"));
+		if (wMenuId == 1000) {
+			szText = std::wstring(_T("Exit"));
+			::MessageBox(hWnd, szText.c_str(), _T("Menu"), MB_OK);
+		}
+		else if (wMenuId == 1001) {
+			szText = std::wstring(_T("Config..."));
+			::MessageBox(hWnd, szText.c_str(), _T("Menu"), MB_OK);
+		}
+		return 0;
 	}
 
 	return ::DefWindowProc(hWnd, uMsg, wParam, lParam);
