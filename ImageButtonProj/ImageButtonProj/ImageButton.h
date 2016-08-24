@@ -2,33 +2,22 @@
 
 #include <Windows.h>
 #include <tchar.h>
+#include <memory>
+#include "Button.h"
+#include "type.h"
+#include "utility.hpp"
 
-#pragma comment(lib, "Msimg32.lib")
-
-class ImageButton {
-	enum BUTTONSTATE {
-		BST_NORMAL,
-		BST_HOVER,
-		BST_CLICK
-	};
+class ImageButtonImpl;
+class ImageButton : public Button {
 public :
 	ImageButton();
-	~ImageButton();
+	virtual ~ImageButton();
 
 public :
-	HWND Create(HWND hParentWnd, RECT& rc, UINT uId, LPCTSTR szFileName, SIZE& cBlock, COLORREF clrTrans = RGB(255,255,255));
+	HWND Create(HWND hParentWnd, Rect rc, LPCTSTR szText, LPCTSTR szImageFileName, Size cBlock);
 
-	HWND GetHandle();
 protected :
-	LRESULT CALLBACK ButtonProc(HWND, UINT, WPARAM, LPARAM);
-	static LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
-
+	LRESULT OnPaint(HWND hWnd, WPARAM wParam, LPARAM lParam);
 private :
-	HWND hButtonWnd;
-	HBITMAP hBitmap;
-	BUTTONSTATE nState;
-	static WNDPROC lpfnButtonProc;
-	INT cx, cy;
-	BOOL bTrackMouseEvent;
-	COLORREF clrTransparent;
+	std::shared_ptr<ImageButtonImpl> impl;
 };

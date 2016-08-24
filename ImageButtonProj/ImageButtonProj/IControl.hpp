@@ -28,6 +28,9 @@ public :
 		}
 		return false;
 	}
+	HWND GetHandle() const {
+		return hOwner;
+	}
 protected :
 	unsigned long generateId() {
 		return gid++;

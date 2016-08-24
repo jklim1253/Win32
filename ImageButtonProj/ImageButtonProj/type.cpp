@@ -29,6 +29,13 @@ Rect::Rect(Point ct, Size cs)
 	right = left + cs.cx;
 	bottom = bottom + cs.cy;
 }
+Rect::Rect(RECT rc)
+{
+	left = rc.left;
+	top = rc.top;
+	right = rc.right;
+	bottom = rc.bottom;
+}
 Rect Rect::toScreen(HWND hWnd) const {
 	Point lt(left, top);
 	Point rb(right, bottom);
@@ -78,6 +85,26 @@ Point Rect::center() const
 	return Point((left+right)/2, (top+bottom)/2);
 }
 
+Rect Rect::Inflate(LONG cx, LONG cy)
+{
+	return Rect(left - cx, top - cy, right + cx, bottom + cy);
+}
+
+Rect Rect::Inflate(LONG l, LONG t, LONG r, LONG b)
+{
+	return Rect(left - l, top - t, right + r, bottom + b);
+}
+
+Rect Rect::Deflate(LONG cx, LONG cy)
+{
+	return Rect(left + cx, top + cy, right - cx, bottom - cy);
+}
+
+Rect Rect::Deflate(LONG l, LONG t, LONG r, LONG b)
+{
+	return Rect(left + l, top + t, right - r, bottom - b);
+}
+
 Rect Rect::operator+(Size cs) const
 {
 	return Rect(left+cs.cx,top+cs.cy,right+cs.cx,bottom+cs.cy);
@@ -104,12 +131,24 @@ Size::Size(LONG x, LONG y)
 	cy = y;
 }
 
+Size::Size(SIZE cs)
+{
+	cx = cs.cx;
+	cy = cs.cy;
+}
+
 Point::Point() {
 	x = y = 0;
 }
 Point::Point(LONG _x, LONG _y) {
 	x = _x;
 	y = _y;
+}
+
+Point::Point(POINT pt)
+{
+	x = pt.x;
+	y = pt.y;
 }
 
 Point Point::toScreen(HWND hWnd) const

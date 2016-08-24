@@ -273,11 +273,8 @@ SlideBoard::~SlideBoard() {
 
 }
 HWND SlideBoard::Create(HWND hParentWnd, const RECT& rc, const SIZE& cBlock) {
-
-	return impl->Create(hParentWnd, rc, cBlock);
-}
-HWND SlideBoard::GetHandle() {
-	return impl->hMainWnd;
+	hOwner = impl->Create(hParentWnd, rc, cBlock);
+	return hOwner;
 }
 void SlideBoard::AddBox(LPCTSTR title, std::shared_ptr<Operation> op) {
 	impl->AddBox(title, op);

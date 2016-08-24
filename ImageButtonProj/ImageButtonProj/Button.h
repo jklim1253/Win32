@@ -3,6 +3,7 @@
 #include <Windows.h>
 #include <tchar.h>
 #include <memory>
+#include <string>
 #include "IControl.hpp"
 #include "type.h"
 
@@ -22,18 +23,24 @@ enum BUTTON_MESSAGE {
 	BM_PRESSING,
 };
 struct EventResponser {
+	HWND hParent;
+	EventResponser(HWND _hParent = NULL) : hParent(_hParent) {}
 	virtual void operator()() = 0;
 };
+
+
 class ButtonImpl;
 class Button : public IControl<Button> {
 public :
+	typedef LRESULT(Button::*MessageHandler)(HWND, WPARAM, LPARAM);
+
 	Button();
 	virtual ~Button();
 
-	HWND Create(HWND hParentWnd, Rect rc, LPCTSTR title);
+	HWND Create(HWND hParentWnd, Rect rc, LPCTSTR szText);
 
-	inline LPCTSTR GetText() const;
-	inline void SetText(LPCTSTR szText);
+	std::wstring GetText() const;
+	void SetText(const std::wstring& szText);
 
 	BUTTON_STATE GetState() const;
 	unsigned long GetId() const;
@@ -42,6 +49,9 @@ public :
 	void setResponseHover(std::shared_ptr<EventResponser> res);
 	void setResponseClicked(std::shared_ptr<EventResponser> res);
 	void setResponsePressing(std::shared_ptr<EventResponser> res);
+protected :
+	void SetMessageHandler(Button* obj, UINT uMsg, MessageHandler handler);
+	LPCTSTR GetButtonClassName() const;
 private :
 	std::shared_ptr<ButtonImpl> impl;
 };

@@ -12,6 +12,7 @@ struct Rect : public RECT {
 	Rect(LONG l, LONG t, Size cs);
 	Rect(Point lt, Point rb);
 	Rect(Point ct, Size cs);
+	Rect(RECT rc);
 
 	Rect toScreen(HWND hWnd) const;
 	Rect toClient(HWND hWnd) const;
@@ -23,6 +24,12 @@ struct Rect : public RECT {
 	LONG height() const;
 	Point center() const;
 
+	Rect Inflate(LONG cx, LONG cy);
+	Rect Inflate(LONG l, LONG t, LONG r, LONG b);
+	Rect Deflate(LONG cx, LONG cy);
+	Rect Deflate(LONG l, LONG t, LONG r, LONG b);
+
+	// OffsetRect
 	Rect operator+(Size cs) const;
 	Rect operator-(Size cs) const;
 };
@@ -30,10 +37,12 @@ struct Size : public SIZE {
 	Size();
 	Size(LONG cs);
 	Size(LONG x, LONG y);
+	Size(SIZE cs);
 };
 struct Point : public POINT {
 	Point();
 	Point(LONG _x, LONG _y);
+	Point(POINT pt);
 
 	Point toScreen(HWND hWnd) const;
 	Point toClient(HWND hWnd) const;

@@ -1,8 +1,11 @@
 #include <string>
 #include <ctime>
+#include <map>
+#include <list>
 #include "Button.h"
 #include "utility.hpp"
 
+typedef LRESULT(Button::*MessageHandler)(HWND, WPARAM, LPARAM);
 class ButtonImpl {
 public :
 	ButtonImpl()
@@ -14,6 +17,7 @@ public :
 		, resp_hover(nullptr)
 		, resp_clicked(nullptr)
 		, resp_pressing(nullptr)
+		, pOwnerObject(nullptr)
 	{
 	}
 	void registerClass() {
@@ -37,7 +41,17 @@ public :
 
 		registered = true;
 	}
+	void SetMessageHandler(UINT uMsg, MessageHandler handler) {
+		MessageMap[uMsg] = handler;
+	}
 	LRESULT UserProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
+		if (MessageMap[uMsg]) {
+			return (pOwnerObject->*MessageMap[uMsg])(hWnd, wParam, lParam);
+		}
+
+		return BaseProc(hWnd, uMsg, wParam, lParam);
+	}
+	LRESULT BaseProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 		if (uMsg == WM_CREATE) {
 
 			return 0;
@@ -198,11 +212,11 @@ public :
 		return ::DefWindowProc(hWnd, uMsg, wParam, lParam);
 	}
 
-	LPCTSTR GetText() const {
-		return szText.c_str();
+	std::wstring GetText() const {
+		return szText;
 	}
-	void SetText(LPCTSTR szText) {
-		this->szText = std::wstring(szText);
+	void SetText(const std::wstring& szText) {
+		this->szText = szText;
 	}
 	BUTTON_STATE GetState() const {
 		return btnState;
@@ -219,6 +233,8 @@ public :
 	std::shared_ptr<EventResponser> resp_hover;
 	std::shared_ptr<EventResponser> resp_clicked;
 	std::shared_ptr<EventResponser> resp_pressing;
+	std::map<UINT, MessageHandler> MessageMap;
+	Button* pOwnerObject;
 };
 Button::Button()
 	: impl(std::make_shared<ButtonImpl>())
@@ -229,7 +245,7 @@ Button::~Button()
 {
 }
 
-HWND Button::Create(HWND hParentWnd, Rect rc, LPCTSTR title)
+HWND Button::Create(HWND hParentWnd, Rect rc, LPCTSTR szText)
 {
 	if (!impl->registered) {
 		impl->registerClass();
@@ -237,19 +253,19 @@ HWND Button::Create(HWND hParentWnd, Rect rc, LPCTSTR title)
 	HINSTANCE hInstance = (HINSTANCE)::GetModuleHandle(NULL);
 
 	DWORD dwStyle = WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS;
-	impl->SetText(title);
-	hOwner = ::CreateWindowEx(0, impl->szClassName, title, dwStyle, rc.left, rc.top, rc.width(), rc.height(),
+	impl->SetText(szText);
+	hOwner = ::CreateWindowEx(0, impl->szClassName, szText, dwStyle, rc.left, rc.top, rc.width(), rc.height(),
 		hParentWnd, (HMENU)generateId(), hInstance, impl.get());
 
 	return HWND();
 }
 
-LPCTSTR Button::GetText() const
+std::wstring Button::GetText() const
 {
 	return impl->GetText();
 }
 
-void Button::SetText(LPCTSTR szText)
+void Button::SetText(const std::wstring& szText)
 {
 	impl->SetText(szText);
 }
@@ -282,4 +298,15 @@ void Button::setResponseClicked(std::shared_ptr<EventResponser> res)
 void Button::setResponsePressing(std::shared_ptr<EventResponser> res)
 {
 	impl->resp_pressing = res;
+}
+
+void Button::SetMessageHandler(Button* obj, UINT uMsg, MessageHandler handler)
+{
+	impl->pOwnerObject = obj;
+	impl->SetMessageHandler(uMsg, handler);
+}
+
+LPCTSTR Button::GetButtonClassName() const
+{
+	return impl->szClassName;
 }
