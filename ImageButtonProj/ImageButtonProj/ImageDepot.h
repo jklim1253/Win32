@@ -16,6 +16,8 @@ class _ImageDepot : public Singleton<_ImageDepot> {
 public :
 	HBITMAP get(const std::tstring& filename);
 	HBITMAP operator [](const std::tstring& filename);
+	HBITMAP get(UINT uResourceId);
+	HBITMAP operator [](UINT uResourceId);
 private :
 	_ImageDepot();
 	~_ImageDepot();

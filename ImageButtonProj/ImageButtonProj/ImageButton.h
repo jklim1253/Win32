@@ -15,6 +15,7 @@ public :
 
 public :
 	HWND Create(HWND hParentWnd, Rect rc, LPCTSTR szText, LPCTSTR szImageFileName, Size cBlock);
+	HWND Create(HWND hParentWnd, Rect rc, LPCTSTR szText, UINT uResourceId, Size cBlock);
 
 protected :
 	LRESULT OnPaint(HWND hWnd, WPARAM wParam, LPARAM lParam);

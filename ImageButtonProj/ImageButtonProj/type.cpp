@@ -115,6 +115,24 @@ Rect Rect::operator-(Size cs) const
 	return Rect(left-cs.cx,top-cs.cy,right-cs.cx,bottom-cs.cy);
 }
 
+Rect & Rect::operator+=(Size cs)
+{
+	left += cs.cx;
+	right += cs.cx;
+	top += cs.cy;
+	bottom += cs.cy;
+	return *this;
+}
+
+Rect & Rect::operator-=(Size cs)
+{
+	left -= cs.cx;
+	right -= cs.cx;
+	top -= cs.cy;
+	bottom -= cs.cy;
+	return *this;
+}
+
 Size::Size()
 {
 	cx = cy = 0;

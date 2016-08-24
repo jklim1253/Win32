@@ -89,6 +89,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -119,6 +120,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -159,10 +161,14 @@
     <ClInclude Include="IControl.hpp" />
     <ClInclude Include="ImageButton.h" />
     <ClInclude Include="ImageDepot.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="SlideBoard.h" />
     <ClInclude Include="type.h" />
     <ClInclude Include="utility.hpp" />
     <ClInclude Include="winmain.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="ImageButtonProj.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

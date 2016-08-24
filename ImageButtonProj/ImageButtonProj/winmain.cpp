@@ -1,4 +1,5 @@
 #include "winmain.h"
+#include "resource.h"
 
 INT WINAPI
 _tWinMain(HINSTANCE hInst,
@@ -13,7 +14,8 @@ _tWinMain(HINSTANCE hInst,
 	wcex.cbSize = sizeof(WNDCLASSEX);
 	wcex.hbrBackground = (HBRUSH)::GetStockObject(WHITE_BRUSH);
 	wcex.hCursor = ::LoadCursor(NULL, IDC_ARROW);
-	wcex.hIcon = ::LoadIcon(NULL, IDI_APPLICATION);
+	//wcex.hIcon = ::LoadIcon(NULL, IDI_APPLICATION);
+	wcex.hIcon = ::LoadIcon(hInst, MAKEINTRESOURCE(MAIN_ICON));
 	wcex.hIconSm = wcex.hIcon;
 	wcex.hInstance = hInst;
 	wcex.lpfnWndProc = &WndProc;

@@ -32,6 +32,8 @@ struct Rect : public RECT {
 	// OffsetRect
 	Rect operator+(Size cs) const;
 	Rect operator-(Size cs) const;
+	Rect& operator+=(Size cs);
+	Rect& operator-=(Size cs);
 };
 struct Size : public SIZE {
 	Size();

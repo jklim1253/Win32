@@ -32,6 +32,18 @@ HWND ImageButton::Create(HWND hParentWnd, Rect rc, LPCTSTR szText, LPCTSTR szIma
 	return hOwner;
 }
 
+HWND ImageButton::Create(HWND hParentWnd, Rect rc, LPCTSTR szText, UINT uResourceId, Size cBlock) {
+	Button::Create(hParentWnd, rc, szText);
+
+	// load bitmap from resource.
+	impl->hBitmap = ImageDepot[uResourceId];
+	impl->cBlock = cBlock;
+
+	SetMessageHandler(this, WM_PAINT, (Button::MessageHandler)&ImageButton::OnPaint);
+
+	return hOwner;
+}
+
 LRESULT ImageButton::OnPaint(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
 	PAINTSTRUCT ps;
