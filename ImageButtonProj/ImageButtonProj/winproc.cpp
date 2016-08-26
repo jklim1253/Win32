@@ -100,20 +100,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 		Board.Create(hWnd, Rect(), cBoard);
 		Board.Move(rc.Deflate(margin, 50 + margin, margin, margin));
 
-		hMenu = ::CreatePopupMenu();
-		MENUITEMINFO mii = { 0 };
-		mii.cbSize = sizeof(MENUITEMINFO);
-		mii.fMask = MIIM_STRING | MIIM_DATA | MIIM_ID;
-		mii.dwTypeData = _T("Exit");
-		mii.cch = _tcslen(mii.dwTypeData);
-		mii.wID = 1000;
-		::InsertMenuItem(hMenu, 0, TRUE, &mii);
-
-		mii.dwTypeData = _T("Config...");
-		mii.cch = _tcslen(mii.dwTypeData);
-		mii.wID = 1001;
-		::InsertMenuItem(hMenu, 1, TRUE, &mii);
-
 		return 0;
 	}
 	else if (uMsg == WM_PAINT) {
@@ -182,38 +168,44 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 
 		return 0;
 	}
-	else if (uMsg == WM_RBUTTONDOWN) {
+	else if (uMsg == WM_CONTEXTMENU) {
+		HWND hMenuWnd = (HWND)wParam;
+
+		if (hMenuWnd != hWnd) return 0;
+
 		Point ptMenu(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
-		ptMenu = ptMenu.toScreen(hWnd);
+
+		// create menu.
+		hMenu = ::CreatePopupMenu();
+		MENUITEMINFO mii = { 0 };
+		mii.cbSize = sizeof(MENUITEMINFO);
+		mii.fMask = MIIM_STRING | MIIM_DATA | MIIM_ID;
+		mii.dwTypeData = _T("Exit");
+		mii.cch = _tcslen(mii.dwTypeData);
+		mii.wID = 1000;
+		::InsertMenuItem(hMenu, 0, TRUE, &mii);
+
+		mii.dwTypeData = _T("Config...");
+		mii.cch = _tcslen(mii.dwTypeData);
+		mii.wID = 1001;
+		::InsertMenuItem(hMenu, 1, TRUE, &mii);
+
 		// show popup-menu.
-		int nSelect = ::TrackPopupMenuEx(hMenu, TPM_LEFTALIGN | TPM_TOPALIGN | TPM_NOANIMATION | TPM_RETURNCMD, ptMenu.x, ptMenu.y, hWnd, NULL);
+		int nSelect = ::TrackPopupMenuEx(hMenu, TPM_LEFTALIGN | TPM_TOPALIGN | TPM_NOANIMATION | TPM_RETURNCMD | TPM_LEFTBUTTON, ptMenu.x, ptMenu.y, hMenuWnd, NULL);
 
 		switch (nSelect) {
 		case 1000 :
-			::MessageBox(NULL, _T("1000"), _T("Out"), MB_OK);
+			::SendMessage(hWnd, WM_SYSCOMMAND, SC_CLOSE, 0);
 			break;
 		case 1001 :
-			::MessageBox(NULL, _T("1000"), _T("Out"), MB_OK);
+			::MessageBox(NULL, _T("Config"), _T("Out"), MB_OK);
 			break;
 		default :
-			::MessageBox(NULL, _T("Wrong"), _T("Out"), MB_OK);
 			break;
 		}
 
-		return 0;
-	}
-	else if (uMsg == WM_COMMAND) {
-		// menu operation
-		WORD wMenuId = LOWORD(wParam);
-		std::wstring szText(_T("NULL"));
-		if (wMenuId == 1000) {
-			szText = std::wstring(_T("Exit"));
-			::MessageBox(hWnd, szText.c_str(), _T("Menu"), MB_OK);
-		}
-		else if (wMenuId == 1001) {
-			szText = std::wstring(_T("Config..."));
-			::MessageBox(hWnd, szText.c_str(), _T("Menu"), MB_OK);
-		}
+		::DestroyMenu(hMenu);
+
 		return 0;
 	}
 
