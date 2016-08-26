@@ -23,6 +23,7 @@ struct Rect : public RECT {
 	LONG width() const;
 	LONG height() const;
 	Point center() const;
+	Size size() const;
 
 	Rect Inflate(LONG cx, LONG cy);
 	Rect Inflate(LONG l, LONG t, LONG r, LONG b);

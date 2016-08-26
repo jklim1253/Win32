@@ -85,6 +85,11 @@ Point Rect::center() const
 	return Point((left+right)/2, (top+bottom)/2);
 }
 
+Size Rect::size() const
+{
+	return Size(width(), height());
+}
+
 Rect Rect::Inflate(LONG cx, LONG cy)
 {
 	return Rect(left - cx, top - cy, right + cx, bottom + cy);

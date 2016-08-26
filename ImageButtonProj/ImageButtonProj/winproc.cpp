@@ -6,9 +6,9 @@
 #include "Button.h"
 #include <windowsx.h>
 
-struct RunOperation : public Operation {
+struct RunOperation : public EventResponser {
 	virtual void operator ()() {
-		::MessageBox(NULL, _T("Test"), _T("Test"), MB_OK);
+		::MessageBox(NULL, _T("What do u want?"), _T("Item Action"), MB_OK);
 	}
 };
 ImageButton Add, MinMax, Close;
@@ -20,9 +20,9 @@ POINT ptMouse;
 struct AddResponse : public EventResponser {
 	void operator()() {
 		std::wostringstream oss;
-		oss << (Board.GetBoxLength() + 1) << " item";
-		std::shared_ptr<Operation> op(std::make_shared<RunOperation>());
-		Board.AddBox(oss.str().c_str(), op);
+		oss << (Board.length() + 1) << " item";
+		std::shared_ptr<EventResponser> op(std::make_shared<RunOperation>());
+		Board.AddItem(oss.str().c_str(), op);
 	}
 };
 struct MinMaxResponse : public EventResponser {

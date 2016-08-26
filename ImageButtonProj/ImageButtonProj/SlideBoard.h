@@ -4,10 +4,8 @@
 #include <tchar.h>
 #include <memory>
 #include "IControl.hpp"
+#include "ImageButton.h"
 
-struct Operation {
-	virtual void operator ()() = 0;
-};
 class SlideBoardImpl;
 class SlideBoard : public IControl<SlideBoard> {
 
@@ -18,8 +16,8 @@ public :
 public :
 	HWND Create(HWND hParentWnd, const RECT& rc, const SIZE& cBlock);
 
-	void AddBox(LPCTSTR title, std::shared_ptr<Operation> op);
-	size_t GetBoxLength() const;
+	void AddItem(LPCTSTR title, std::shared_ptr<EventResponser> op);
+	size_t length() const;
 protected :
 
 private :
