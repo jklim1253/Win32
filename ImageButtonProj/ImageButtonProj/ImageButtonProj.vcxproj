@@ -161,6 +161,7 @@
     <ClInclude Include="IControl.hpp" />
     <ClInclude Include="ImageButton.h" />
     <ClInclude Include="ImageDepot.h" />
+    <ClInclude Include="ItemDescriptor.h" />
     <ClInclude Include="IWindow.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="SlideBoard.h" />

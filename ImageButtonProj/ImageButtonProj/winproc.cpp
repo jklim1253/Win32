@@ -208,6 +208,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 
 		return 0;
 	}
+	else if (uMsg == WM_NCPAINT) {
+		HDC hdc = ::GetWindowDC(hWnd);
+		// Paint into this DC 
+		Rect rc = Rect::windowRect(hWnd);
+		::FillRect(hdc, &rc, GetStockBrush(WHITE_BRUSH));
+		ReleaseDC(hWnd, hdc);
+		return 1;
+	}
 
 	return ::DefWindowProc(hWnd, uMsg, wParam, lParam);
 }
