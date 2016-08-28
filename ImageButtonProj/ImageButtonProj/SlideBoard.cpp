@@ -4,11 +4,55 @@
 #include "resource.h"
 #include <list>
 #include <sstream>
+#include <windowsx.h>
 
 class Box : public ImageButton {
 public :
 	Box(HWND hParent, LPCTSTR szText) {
 		ImageButton::Create(hParent, Rect(), szText, ITEM_BITMAP, Size(400,400));
+
+		SetMessageHandler(this, WM_CONTEXTMENU, (Button::MessageHandler)&Box::OnContextMenu);
+	}
+	LRESULT OnContextMenu(HWND hWnd, WPARAM wParam, LPARAM lParam) {
+		HWND hMenuWnd = (HWND)wParam;
+
+		if (hMenuWnd != hWnd) return 0;
+
+		Point ptMenu(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
+
+		HMENU hMenu = ::CreatePopupMenu();
+		MENUITEMINFO mii;
+		mii.cbSize = sizeof(MENUITEMINFO);
+		mii.fMask = MIIM_STRING | MIIM_DATA | MIIM_ID;
+		mii.dwTypeData = _T("Edit...");
+		mii.cch = _tcslen(mii.dwTypeData);
+		mii.wID = 1000;
+		::InsertMenuItem(hMenu, 0, TRUE, &mii);
+
+		mii.dwTypeData = _T("Delete");
+		mii.cch = _tcslen(mii.dwTypeData);
+		mii.wID = 1001;
+		::InsertMenuItem(hMenu, 1, TRUE, &mii);
+
+		int nSelect = ::TrackPopupMenuEx(hMenu, 
+			TPM_LEFTALIGN | TPM_TOPALIGN | TPM_NOANIMATION | TPM_RETURNCMD | TPM_LEFTBUTTON, 
+			ptMenu.x, ptMenu.y, 
+			hMenuWnd, NULL);
+
+		switch (nSelect) {
+		case 1000 :
+			// TODO : call Edit item.
+			break;
+		case 1001 :
+			// TODO : call delete item.
+			break;
+		default :
+			break;
+		}
+
+		::DestroyMenu(hMenu);
+
+		return 0;
 	}
 
 private :
