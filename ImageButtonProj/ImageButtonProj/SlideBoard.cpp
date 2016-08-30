@@ -6,6 +6,7 @@
 #include <sstream>
 #include <windowsx.h>
 
+#define SBI_DELETE	(WM_USER+1)
 class Box : public ImageButton {
 public :
 	Box(HWND hParent, LPCTSTR szText) {
@@ -42,9 +43,13 @@ public :
 		switch (nSelect) {
 		case 1000 :
 			// TODO : call Edit item.
+			// popup edit window for item.
+			::MessageBox(NULL, _T("Edit"), _T("Edit"), MB_OK);
 			break;
 		case 1001 :
 			// TODO : call delete item.
+			// using hWnd, who is occur event.
+			::SendMessage(GetParentHandle(), SBI_DELETE, (WPARAM)hWnd, 0);
 			break;
 		default :
 			break;
@@ -209,6 +214,10 @@ public :
 				box->Move(next);
 				current = next;
 			}
+		}
+		else if (uMsg == SBI_DELETE) {
+			::MessageBox(NULL, _T("Delete Item"), _T("Delete"), MB_OK);
+			return 0;
 		}
 
 		return ::DefWindowProc(hWnd, uMsg, wParam, lParam);

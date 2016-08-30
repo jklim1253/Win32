@@ -257,6 +257,8 @@ HWND Button::Create(HWND hParentWnd, Rect rc, LPCTSTR szText)
 	hOwner = ::CreateWindowEx(0, impl->szClassName, szText, dwStyle, rc.left, rc.top, rc.width(), rc.height(),
 		hParentWnd, (HMENU)generateId(), hInstance, impl.get());
 
+	this->hParentWnd = hParentWnd;
+
 	return HWND();
 }
 
